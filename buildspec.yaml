@@ -26,9 +26,9 @@ phases:
     commands:
       - echo Building and analyzing changed packages...
       - echo "CHANGED PROJECTOO:" $CHANGED_PROJECTS
-      - |
-        for PROJECT in $CHANGED_PROJECTS; do
-          echo "Current Project: $PROJECT"
+      - >
+        bash -c 'for PROJECT in $CHANGED_PROJECTS; do
+        echo "Current Projectooo: $PROJECT"
           cd packages/$PROJECT
           if [[ "$PROJECT" == "simple-express-server" ]]; then
             echo "Running Maven build and SonarQube analysis for Microservice-A"
@@ -38,7 +38,7 @@ phases:
             echo "Running Yarn build and SonarQube analysis for Microservice-C"
           fi
           cd - # This takes you back to the previous directory (one level up)
-        done
+        done'
 
   post_build:
     commands:
