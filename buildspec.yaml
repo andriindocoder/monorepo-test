@@ -1,5 +1,7 @@
 version: 0.2
-
+env:
+  secrets-manager:
+    LOGIN: local/sonarqube:sonartoken
 phases:
   install:
     commands:
@@ -36,7 +38,7 @@ phases:
           cd packages/$PROJECT
           if [[ "$PROJECT" == "simple-express-server" ]]; then
             echo "Running Maven build and SonarQube analysis for Microservice-A"
-            sonar-scanner -Dsonar.login=115e0613348007744b9666b25f508675bdd79cd5 -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=monorepo-test -Dsonar.organization=andriindocoder
+            sonar-scanner -Dsonar.login=$LOGIN -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=andriindocoder_monorepo-test -Dsonar.organization=andriindocoder
             sleep 5
             curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=monorepo-test >result.json
             cat result.json
