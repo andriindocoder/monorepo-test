@@ -11,7 +11,6 @@ phases:
     commands:
       - git fetch --unshallow || git fetch --depth=1000
       - git fetch origin dev:dev
-      - set -e
       - echo Change to the source directory...
       - cd $CODEBUILD_SRC_DIR
       - chmod +x detect_changes.sh
