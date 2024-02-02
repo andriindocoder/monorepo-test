@@ -38,7 +38,7 @@ phases:
           cd packages/$PROJECT
           if [[ "$PROJECT" == "simple-express-server" ]]; then
             echo "Running Maven build and SonarQube analysis for Microservice-A"
-            sonar-scanner -Dsonar.login=$LOGIN -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=andriindocoder_monorepo-test -Dsonar.organization=andriindocoder
+            sonar-scanner -Dsonar.login=$LOGIN -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=andriindocoder_monorepo-test_1 -Dsonar.organization=andriindocoder
             sleep 5
             curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=monorepo-test >result.json
             cat result.json
