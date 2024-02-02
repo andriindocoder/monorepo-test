@@ -40,7 +40,7 @@ phases:
             echo "Running Maven build and SonarQube analysis for Microservice-A"
             sonar-scanner -Dsonar.login=$LOGIN -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=andriindocoder_monorepo-test_1 -Dsonar.organization=andriindocoder
             sleep 5
-            curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=monorepo-test >result.json
+            curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=andriindocoder_monorepo-test_1 >result.json
             cat result.json
             if [ "$(jq -r '.projectStatus.status' result.json)" = "ERROR" ]; then
                 echo "SonarQube analysis reported status as ERROR."
@@ -48,6 +48,14 @@ phases:
             fi
           elif [[ "$PROJECT" == "simple-react-app" ]]; then
             echo "Running Gradle build and SonarQube analysis for Microservice-B"
+            sonar-scanner -Dsonar.login=$LOGIN -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=andriindocoder_monorepo-test_1 -Dsonar.organization=andriindocoder
+            sleep 5
+            curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=andriindocoder_monorepo-test_1 >result.json
+            cat result.json
+            if [ "$(jq -r '.projectStatus.status' result.json)" = "ERROR" ]; then
+                echo "SonarQube analysis reported status as ERROR."
+                exit 1
+            fi
           elif [[ "$PROJECT" == "simple-shared-data" ]]; then
             echo "Running Yarn build and SonarQube analysis for Microservice-C"
           fi
