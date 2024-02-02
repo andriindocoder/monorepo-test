@@ -15,15 +15,26 @@ phases:
       - ls -la
       - echo Verify we are in a git repository...
       - git status
-      # - echo Making detect_changes.sh executable...
-      # - chmod +x detect_changes.sh
-      # - echo Checking for changes in the packages...
-      # - echo "Changed packages:" $(./detect_changes.sh)
+      - echo Making detect_changes.sh executable...
+      - chmod +x detect_changes.sh
+      - echo Checking for changes in the packages...
+      - echo "Changed packages:" $(./detect_changes.sh)
 
   build:
     commands:
       - echo Building and analyzing changed packages...
-
+      - |
+        for PROJECT in $CHANGED_PROJECTS; do
+          cd packages/$PROJECT
+          if [[ "$PROJECT" == "simple-express-server" ]]; then
+            echo "Running Maven build and SonarQube analysis for Microservice-A"
+          elif [[ "$PROJECT" == "simple-react-app" ]]; then
+            echo "Running Gradle build and SonarQube analysis for Microservice-B"
+          elif [[ "$PROJECT" == "simple-shared-data" ]]; then
+            echo "Running Yarn build and SonarQube analysis for Microservice-C"
+          fi
+          cd - # This takes you back to the previous directory (one level up)
+        done
 
   post_build:
     commands:
