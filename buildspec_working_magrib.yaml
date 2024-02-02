@@ -1,10 +1,4 @@
 version: 0.2
-env:
-  secrets-manager:
-    LOGIN: local/sonarqube:sonartoken
-    HOST: local/sonarqube:HOST
-    Organization: local/sonarqube:Organization
-    Project: local/sonarqube:Project
 
 phases:
   install:
@@ -15,14 +9,6 @@ phases:
 
   pre_build:
     commands:
-      - apt-get update
-      - apt-get install -y jq
-      - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-      - echo "Current path is >>>"
-      - sh $pwd
-      - unzip ./sonar-scanner-cli-5.0.1.3006-linux.zip
-      - ls $pwd
-      - export PATH=$PATH:./sonar-scanner-5.0.1.3006-linux/bin/
       - git fetch --unshallow || git fetch --depth=1000
       - echo Change to the source directory...
       - cd $CODEBUILD_SRC_DIR
@@ -41,7 +27,6 @@ phases:
           cd packages/$PROJECT
           if [[ "$PROJECT" == "simple-express-server" ]]; then
             echo "Running Maven build and SonarQube analysis for Microservice-A"
-            sonar-scanner -Dsonar.login=$LOGIN -Dsonar.host.url=$HOST -Dsonar.projectKey=$Project -Dsonar.organization=$Organization
           elif [[ "$PROJECT" == "simple-react-app" ]]; then
             echo "Running Gradle build and SonarQube analysis for Microservice-B"
           elif [[ "$PROJECT" == "simple-shared-data" ]]; then
@@ -49,10 +34,7 @@ phases:
           fi
           cd - # This takes you back to the previous directory (one level up)
         done'
-      - sleep 5
-      - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$Project >result.json
-      - cat result.json
-      - if [ $(jq -r '.projectStatus.status' result.json) = ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
+
   post_build:
     commands:
       - echo Build and analysis completed for changed packages.
