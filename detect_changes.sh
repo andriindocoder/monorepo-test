@@ -10,7 +10,7 @@ BASE_BRANCH="main"
 # CHANGED_FILES=$(git diff --name-only "origin/$BASE_BRANCH"...HEAD)
 CHANGED_FILES=$(git diff --name-only HEAD~1..HEAD)
 # Define the sub-projects in the monorepo
-echo "CHANGEEE: $CHANGED_FILES"
+echo "$CHANGED_FILES"
 declare -a PROJECTS=("packages/simple-express-server" "packages/simple-react-app" "packages/simple-shared-data")
 
 # Initialize an empty array for changed projects
