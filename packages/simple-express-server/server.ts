@@ -14,7 +14,7 @@ app.use((_req, res, next) => {
 
 app.get("/", (_req, res) => {
   const responseData: QueryPayload = {
-    payload: _.snakeCase("Server data returned successfully server update again again again"),
+    payload: _.snakeCase("Server data returned successfully server update again again"),
   };
 
   res.json(responseData);

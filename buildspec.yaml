@@ -1,10 +1,4 @@
 version: 0.2
-env:
-  secrets-manager:
-    LOGIN: local/sonarqube:sonartoken
-    HOST: local/sonarqube:HOST
-    Organization: local/sonarqube:Organization
-    Project: local/sonarqube:Project
 
 phases:
   install:
@@ -42,9 +36,9 @@ phases:
           cd packages/$PROJECT
           if [[ "$PROJECT" == "simple-express-server" ]]; then
             echo "Running Maven build and SonarQube analysis for Microservice-A"
-            sonar-scanner -Dsonar.login=$LOGIN -Dsonar.host.url=$HOST -Dsonar.projectKey=$Project -Dsonar.organization=$Organization
+            sonar-scanner -Dsonar.login=4f8e672d0a68718e7d5e47d2efa4ff107c286ef6 -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=monorepo-test -Dsonar.organization=andriindocoder
             sleep 5
-            curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$Project >result.json
+            curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=monorepo-test >result.json
             cat result.json
             if [ $(jq -r '.projectStatus.status' result.json) = ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
           elif [[ "$PROJECT" == "simple-react-app" ]]; then
