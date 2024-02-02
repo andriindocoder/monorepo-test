@@ -43,7 +43,10 @@ phases:
           if [[ "$PROJECT" == "simple-express-server" ]]; then
             echo "Running Maven build and SonarQube analysis for Microservice-A"
             sonar-scanner -Dsonar.login=$LOGIN -Dsonar.host.url=$HOST -Dsonar.projectKey=$Project -Dsonar.organization=$Organization
+            sleep 5
             curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$Project >result.json
+            cat result.json
+            if [ $(jq -r '.projectStatus.status' result.json) = ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
           elif [[ "$PROJECT" == "simple-react-app" ]]; then
             echo "Running Gradle build and SonarQube analysis for Microservice-B"
           elif [[ "$PROJECT" == "simple-shared-data" ]]; then
@@ -51,9 +54,6 @@ phases:
           fi
           cd - # This takes you back to the previous directory (one level up)
         done'
-      - sleep 5
-      - cat result.json
-      - if [ $(jq -r '.projectStatus.status' result.json) = ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
   post_build:
     commands:
       - echo Build and analysis completed for changed packages.
