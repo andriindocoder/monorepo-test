@@ -25,10 +25,10 @@ phases:
   build:
     commands:
       - echo Building and analyzing changed packages...
-      - echo "CHANGED PROJECT:" $CHANGED_PROJECTS
+      - echo "CHANGED PROJECTOO:" $CHANGED_PROJECTS
       - >
         bash -c 'for PROJECT in $CHANGED_PROJECTS; do
-        echo "Current Updated Project: $PROJECT"
+        echo "Current Projectooo: $PROJECT"
           cd packages/$PROJECT
           if [[ "$PROJECT" == "simple-express-server" ]]; then
             echo "Running Maven build and SonarQube analysis for Microservice-A"
