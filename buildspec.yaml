@@ -11,13 +11,9 @@ phases:
     commands:
       - git fetch --unshallow || git fetch --depth=1000
       - git fetch origin dev:dev
+      - set -e
       - echo Change to the source directory...
       - cd $CODEBUILD_SRC_DIR
-      - echo Check if .git exists...
-      - ls -la
-      - echo Verify we are in a git repository...
-      - git status
-      - echo Making detect_changes.sh executable...
       - chmod +x detect_changes.sh
       - echo Checking for changes in the packages...
       - CHANGED_PROJECTS=$(./detect_changes.sh)
@@ -25,9 +21,10 @@ phases:
   build:
     commands:
       - echo Building and analyzing changed packages...
-      - echo "CHANGED PROJECTS:" $CHANGED_PROJECTS
+      - echo "CHANGED PROJECTOO:" $CHANGED_PROJECTS
       - |
         for PROJECT in $CHANGED_PROJECTS; do
+          echo "Current Project: $PROJECT"
           cd packages/$PROJECT
           if [[ "$PROJECT" == "simple-express-server" ]]; then
             echo "Running Maven build and SonarQube analysis for Microservice-A"
