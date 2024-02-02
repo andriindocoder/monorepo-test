@@ -36,11 +36,14 @@ phases:
           cd packages/$PROJECT
           if [[ "$PROJECT" == "simple-express-server" ]]; then
             echo "Running Maven build and SonarQube analysis for Microservice-A"
-            sonar-scanner -Dsonar.login=4f8e672d0a68718e7d5e47d2efa4ff107c286ef6 -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=monorepo-test -Dsonar.organization=andriindocoder
+            sonar-scanner -Dsonar.login=115e0613348007744b9666b25f508675bdd79cd5 -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=monorepo-test -Dsonar.organization=andriindocoder
             sleep 5
             curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=monorepo-test >result.json
             cat result.json
-            if [ $(jq -r '.projectStatus.status' result.json) = ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
+            if [ "$(jq -r '.projectStatus.status' result.json)" = "ERROR" ]; then
+                echo "SonarQube analysis reported status as ERROR."
+                exit 1
+            fi
           elif [[ "$PROJECT" == "simple-react-app" ]]; then
             echo "Running Gradle build and SonarQube analysis for Microservice-B"
           elif [[ "$PROJECT" == "simple-shared-data" ]]; then
