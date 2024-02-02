@@ -14,7 +14,7 @@ app.use((_req, res, next) => {
 
 app.get("/", (_req, res) => {
   const responseData: QueryPayload = {
-    payload: _.snakeCase("Server data returned successfully fork"),
+    payload: _.snakeCase("Server data returned successfully fork update on main"),
   };
 
   res.json(responseData);

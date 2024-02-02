@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Base branch to compare (e.g., master)
-BASE_BRANCH="master"
+BASE_BRANCH="dev"
 
 # Get a list of changed files compared to the BASE_BRANCH
 CHANGED_FILES="$(git diff --name-only HEAD $(git merge-base HEAD $BASE_BRANCH))"
