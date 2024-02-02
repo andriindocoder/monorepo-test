@@ -1,0 +1,32 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - which git || (echo "Git is not installed" && exit 1)
+      - echo Install root dependencies...
+      # - yarn install # If there are any root dependencies to install
+
+  pre_build:
+    commands:
+      - echo Change to the source directory...
+      - cd $CODEBUILD_SRC_DIR
+      - echo Check if .git exists...
+      - ls -la
+      - echo Verify we are in a git repository...
+      - git status
+      # - echo Making detect_changes.sh executable...
+      # - chmod +x detect_changes.sh
+      # - echo Checking for changes in the packages...
+      # - echo "Changed packages:" $(./detect_changes.sh)
+
+  build:
+    commands:
+      - echo Building and analyzing changed packages...
+
+
+  post_build:
+    commands:
+      - echo Build and analysis completed for changed packages.
+
+# Make sure to replace the placeholder values with your actual SonarQube URL, tokens, and project keys.
