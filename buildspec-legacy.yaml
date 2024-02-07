@@ -1,0 +1,76 @@
+version: 0.2
+env:
+  secrets-manager:
+    LOGIN: local/sonarqube:sonartoken
+phases:
+  install:
+    commands:
+      - which git || (echo "Git is not installed" && exit 1)
+      - echo Install root dependencies...
+      # - yarn install # If there are any root dependencies to install
+
+  pre_build:
+    commands:
+      - apt-get update
+      - apt-get install -y jq
+      - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+      - echo "Current path is >>>"
+      - sh $pwd
+      - unzip sonar-scanner-cli-5.0.1.3006-linux.zip -d /opt
+      - ls $pwd
+      - export PATH=$PATH:/opt/sonar-scanner-5.0.1.3006-linux/bin/
+      - which sonar-scanner || (echo "SonarScanner not installed correctly" && exit 1)
+      - git fetch --unshallow || git fetch --depth=1000
+      - echo Change to the source directory...
+      - cd $CODEBUILD_SRC_DIR
+      - echo Making detect_changes.sh executable...
+      - chmod +x detect_changes.sh
+      - echo Checking for changes in the packages...
+      - CHANGED_PROJECTS=$(./detect_changes.sh)
+
+  build:
+    commands:
+      - echo Building and analyzing changed packages...
+      - echo "CHANGED PROJECT:" $CHANGED_PROJECTS
+      - >
+        bash -c 'for PROJECT in $CHANGED_PROJECTS; do
+        echo "Current Updated Project: $PROJECT"
+          cd packages/$PROJECT
+          if [[ "$PROJECT" == "simple-express-server" ]]; then
+            echo "Running Maven build and SonarQube analysis for Microservice-A"
+            sonar-scanner -Dsonar.login=$LOGIN -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=andriindocoder_monorepo-test_1 -Dsonar.organization=andriindocoder
+            sleep 5
+            curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=andriindocoder_monorepo-test_1 >result.json
+            cat result.json
+            if [ "$(jq -r '.projectStatus.status' result.json)" = "ERROR" ]; then
+                echo "SonarQube analysis reported status as ERROR."
+                exit 1
+            fi
+          elif [[ "$PROJECT" == "simple-react-app" ]]; then
+            echo "Running Gradle build and SonarQube analysis for Microservice-B"
+            sonar-scanner -Dsonar.login=$LOGIN -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=andriindocoder_monorepo-test_1 -Dsonar.organization=andriindocoder
+            sleep 5
+            curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=andriindocoder_monorepo-test_1 >result.json
+            cat result.json
+            if [ "$(jq -r '.projectStatus.status' result.json)" = "ERROR" ]; then
+                echo "SonarQube analysis reported status as ERROR."
+                exit 1
+            fi
+          elif [[ "$PROJECT" == "simple-shared-data" ]]; then
+            echo "Running Yarn build and SonarQube analysis for Microservice-C"
+            sonar-scanner -Dsonar.login=$LOGIN -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=andriindocoder_monorepo-test_1 -Dsonar.organization=andriindocoder
+            sleep 5
+            curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=andriindocoder_monorepo-test_1 >result.json
+            cat result.json
+            if [ "$(jq -r '.projectStatus.status' result.json)" = "ERROR" ]; then
+                echo "SonarQube analysis reported status as ERROR."
+                exit 1
+            fi
+          fi
+          cd - # This takes you back to the previous directory (one level up)
+        done'
+  post_build:
+    commands:
+      - echo Build and analysis completed for changed packages.
+
+# Make sure to replace the placeholder values with your actual SonarQube URL, tokens, and project keys.
